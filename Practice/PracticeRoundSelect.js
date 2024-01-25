@@ -4,6 +4,18 @@ import { Card, Title } from 'react-native-paper';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../firebaseConfig';
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#bbd2ec',
+  },
+  card: {
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+});
+
 const PracticeRoundSelect = ({ navigation }) => {
   const [examRounds, setExamRounds] = useState([]);
 
@@ -61,16 +73,5 @@ const PracticeRoundSelect = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
-  card: {
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-});
 
 export default PracticeRoundSelect;

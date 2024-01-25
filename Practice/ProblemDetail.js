@@ -10,6 +10,72 @@ import {
 } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#bbd2ec',
+  },
+  idText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 2,
+    textAlign: 'center',
+  },
+  image: {
+    width: '100%',
+    minHeight: 460,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  controlButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  controlButton: {
+    backgroundColor: '#838abd',
+    padding: 10,
+    borderRadius: 5,
+    width: 60,
+  },
+  controlButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+  },
+  button: {
+    width: 60,
+    height: 40,
+    backgroundColor: '#4b3e9a',
+    padding: 5,
+    margin: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  selectedButton: {
+    width: 60,
+    height: 40,
+    backgroundColor: '#523383',
+    padding: 5,
+    margin: 5,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  line: {
+    borderBottomColor: '#838abd',
+    borderBottomWidth: 5,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+});
+
 const ProblemDetail = ({ route, navigation }) => {
   const [problems, setProblems] = useState([]);
   const [answers, setAnswers] = useState([]);
@@ -84,9 +150,13 @@ const ProblemDetail = ({ route, navigation }) => {
     ]);
   };
 
+  const id = String(problems[currentIndex]?.id);
+  const formattedId = `${id.slice(0, 2)}회차 ${parseInt(id.slice(2))}번`;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.idText}>{problems[currentIndex]?.id}</Text>
+      <Text style={styles.idText}>{formattedId}</Text>
+      <View style={styles.line} />
       {problems.length > 0 && (
         <ScrollView>
           {problems[currentIndex].data.img && (
@@ -135,54 +205,5 @@ const ProblemDetail = ({ route, navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
-  idText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  image: {
-    width: '100%',
-    height: 330,
-  },
-  buttonContainer: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  controlButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  controlButton: {
-    backgroundColor: '#cddafd',
-    padding: 10,
-  },
-  controlButtonText: {
-    color: '#000',
-  },
-  button: {
-    backgroundColor: '#946CEE',
-    padding: 5,
-    margin: 5,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  selectedButton: {
-    backgroundColor: '#523383',
-    padding: 10,
-    margin: 5,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-  },
-});
 
 export default ProblemDetail;
