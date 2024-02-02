@@ -220,9 +220,9 @@ const QuizGame = ({ navigation }) => {
         });
       }
 
-      Alert.alert('문제가 소진되었습니다.', '최종 점수: ' + score, buttons);
       setSolveCount(0);
       stopTimer();
+      Alert.alert('문제가 소진되었습니다.', '최종 점수: ' + score, buttons);
     }
   }, [solveCount, unsolved]);
 
@@ -255,6 +255,7 @@ const QuizGame = ({ navigation }) => {
           onPress: () => navigation.navigate('UnsolvedScreen', { unsolved }),
         });
       }
+      stopTimer();
       Alert.alert('타임 오버!', '최종 점수: ' + score, buttons);
     }
   }, [timer, unsolved]);
