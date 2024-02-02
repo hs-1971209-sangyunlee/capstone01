@@ -98,8 +98,11 @@ const MainScreen = ({ navigation }) => {
             <Text style={styles.buttonmidText}>통계</Text>
             <MaterialIcons name="auto-graph" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonmid}>
-            <Text style={styles.buttonmidText}>채점하기</Text>
+          <TouchableOpacity
+            style={styles.buttonmid}
+            onPress={() => navigation.navigate('QuizGame')}
+          >
+            <Text style={styles.buttonmidText}>게임</Text>
             <MaterialIcons
               name="check-circle-outline"
               size={24}

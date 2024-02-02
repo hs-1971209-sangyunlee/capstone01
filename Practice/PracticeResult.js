@@ -5,6 +5,7 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import { Card } from 'react-native-paper';
 
@@ -89,6 +90,22 @@ const PracticeResult = ({ route, navigation }) => {
   const [showOnlyWrong, setShowOnlyWrong] = useState(false);
 
   let totalScore = 100;
+
+  // 뒤로가기 시 메인화면으로 이동
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'MainScreen' }],
+        });
+        return true;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   // 틀린 문제의 인덱스를 0으로 설정
   let wrongIndexes = new Array(choicesArray.length).fill(1);

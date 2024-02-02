@@ -9,6 +9,8 @@ import PracticeRoundSelect from './Practice/PracticeRoundSelect';
 import ProblemDetail from './Practice/ProblemDetail';
 import PracticeResult from './Practice/PracticeResult';
 import ProblemCommentary from './Practice/ProblemCommentary';
+import QuizGame from './Game/QuizGame';
+import UnsolvedScreen from './Game/UnsolvedScreen';
 
 const Stack = createStackNavigator();
 
@@ -44,6 +46,16 @@ const App = () => {
         <Stack.Screen
           name="ProblemCommentary"
           component={ProblemCommentary}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="QuizGame"
+          component={QuizGame}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UnsolvedScreen"
+          component={UnsolvedScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
