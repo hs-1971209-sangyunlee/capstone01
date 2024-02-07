@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { View, SafeAreaView, FlatList, StyleSheet, Text } from 'react-native';
 import { Button, TextInput, Card, Title, Paragraph } from 'react-native-paper';
 import { ref, onValue, off } from 'firebase/database';
@@ -49,6 +50,9 @@ const BoardScreenUI = ({ navigation, boardName }) => {
   const [search, setSearch] = useState('');
   const [filteredPosts, setFilteredPosts] = useState([]);
 
+  const isLoggedIn = useSelector((state) => state.isLoggedIn);
+  const userEmail = useSelector((state) => state.userEmail);
+
   useEffect(() => {
     setFilteredPosts(
       posts.filter((post) => {
@@ -64,6 +68,7 @@ const BoardScreenUI = ({ navigation, boardName }) => {
       if (data) {
         const postList = Object.keys(data).map((key) => ({
           id: key,
+          userEmail: data[key].userEmail,
           title: data[key].title,
           body: data[key].body,
         }));
@@ -100,7 +105,14 @@ const BoardScreenUI = ({ navigation, boardName }) => {
               }
             >
               <Card.Content>
-                <Text style={{ fontSize: 20 }}>{item.title}</Text>
+                <Text style={{ fontSize: 18 }}>
+                  {item.title.length > 20
+                    ? item.title.substring(0, 20) + '..'
+                    : item.title}
+                </Text>
+                <Text style={{ fontSize: 12 }}>
+                  {item.userEmail.split('@')[0]}
+                </Text>
               </Card.Content>
             </Card>
           )}
@@ -110,12 +122,15 @@ const BoardScreenUI = ({ navigation, boardName }) => {
         style={styles.writeButton}
         icon="pencil"
         mode="contained"
-        onPress={() =>
-          navigation.navigate('PostCreate', {
-            boardName: boardName,
-            navigation: navigation,
-          })
-        } // 글 작성 페이지로 이동
+        onPress={() => {
+          isLoggedIn
+            ? // 글 작성 페이지로 이동
+              navigation.navigate('PostCreate', {
+                boardName: boardName,
+                navigation: navigation,
+              })
+            : navigation.navigate('Login');
+        }}
       >
         작성
       </Button>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../firebaseConfig';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -227,12 +228,18 @@ const QuizGame = ({ navigation }) => {
   }, [solveCount, unsolved]);
 
   // 타이머 시작
-  useEffect(() => {
-    countdownRef.current = setInterval(() => {
-      if (timer > 0) setTimer((timer) => timer - 1);
-    }, 1000);
-    return () => clearInterval(countdownRef.current); // 컴포넌트 unmount 시 타이머 해제
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      // 타이머 초기화
+      setTimer(120);
+
+      countdownRef.current = setInterval(() => {
+        if (timer > 0) setTimer((timer) => timer - 1);
+      }, 1000);
+
+      return () => clearInterval(countdownRef.current);
+    }, [])
+  );
 
   // 타이머 중지 함수
   const stopTimer = () => {
