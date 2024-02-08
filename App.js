@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LogBox } from 'react-native';
 import { Provider } from 'react-redux';
 import store from './state';
 import { NavigationContainer } from '@react-navigation/native';
@@ -26,8 +27,8 @@ import ProblemCommentary from './Practice/ProblemCommentary';
 import QuizGame from './Game/QuizGame';
 import UnsolvedScreen from './Game/UnsolvedScreen';
 
+// 네비게이터
 const Stack = createStackNavigator();
-
 const screens = [
   {
     name: 'Sidebar',
@@ -84,7 +85,7 @@ const screens = [
     options: { headerShown: false },
   },
 ];
-
+LogBox.ignoreLogs(['Warning: ...']); // 경고창 안뜨게 하기
 const App = () => {
   return (
     <Provider store={store}>

@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../firebaseConfig';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { useSelector } from 'react-redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -99,6 +100,7 @@ const QuizGame = ({ navigation }) => {
   );
   const [unsolved, setUnsolved] = useState([]); // 넘긴 문제 저장
   const [solveCount, setSolveCount] = useState(0); // 문제 수 카운트
+  const isWeb = useSelector((state) => state.isWeb);
 
   // 키워드 가져오기
   useEffect(() => {
@@ -210,7 +212,7 @@ const QuizGame = ({ navigation }) => {
       const buttons = [
         {
           text: '나가기',
-          onPress: () => navigation.navigate('MainScreen'),
+          onPress: () => navigation.navigate('Sidebar'),
         },
       ];
 
@@ -223,7 +225,17 @@ const QuizGame = ({ navigation }) => {
 
       setSolveCount(0);
       stopTimer();
-      Alert.alert('문제가 소진되었습니다.', '최종 점수: ' + score, buttons);
+
+      if (isWeb) {
+        const userConfirmed = window.confirm(
+          '문제가 소진되었습니다. 최종 점수: ' + score
+        );
+        if (userConfirmed) {
+          navigation.navigate('Sidebar');
+        }
+      } else {
+        Alert.alert('문제가 소진되었습니다.', '최종 점수: ' + score, buttons);
+      }
     }
   }, [solveCount, unsolved]);
 
@@ -249,23 +261,43 @@ const QuizGame = ({ navigation }) => {
   // 타임 오버 시 게임 종료 처리
   useEffect(() => {
     if (timer === 0) {
-      const buttons = [
-        {
-          text: '나가기',
-          onPress: () => navigation.navigate('MainScreen'),
-        },
-      ];
-
-      if (unsolved.length > 0) {
-        buttons.push({
-          text: '넘긴 문제 보기',
-          onPress: () => navigation.navigate('UnsolvedScreen', { unsolved }),
-        });
-      }
       stopTimer();
-      Alert.alert('타임 오버!', '최종 점수: ' + score, buttons);
+      const confirmExit = () => {
+        if (isWeb) {
+          const userConfirmed = window.confirm(
+            '타임 오버! 최종 점수: ' + score
+          );
+          if (userConfirmed) {
+            if (unsolved.length > 0) {
+              navigation.navigate('UnsolvedScreen', { unsolved });
+            } else {
+              //navigation.navigate('Sidebar');
+              navigation.goBack();
+            }
+          }
+        } else {
+          const buttons = [
+            {
+              text: '나가기',
+              onPress: () => navigation.goBack(),
+            },
+          ];
+
+          if (unsolved.length > 0) {
+            buttons.push({
+              text: '넘긴 문제 보기',
+              onPress: () =>
+                navigation.navigate('UnsolvedScreen', { unsolved }),
+            });
+          }
+
+          Alert.alert('타임 오버!', '최종 점수: ' + score, buttons);
+        }
+      };
+
+      confirmExit();
     }
-  }, [timer, unsolved]);
+  }, [timer, unsolved, isWeb]);
 
   // 키패드 클릭 시 화면 반영
   const handleSelect = (char, index) => {
@@ -329,6 +361,9 @@ const QuizGame = ({ navigation }) => {
         />
       ) : (
         <>
+          <View style={styles.guess}>
+            <Text style={{ fontSize: 30 }}>{guess}</Text>
+          </View>
           <View style={styles.timer}>
             <Text
               style={timer <= 10 ? styles.timerTextAlert : styles.timerText}
@@ -347,9 +382,7 @@ const QuizGame = ({ navigation }) => {
           >
             <Text style={{ color: 'white' }}>문제 넘기기</Text>
           </TouchableOpacity>
-          <View style={styles.guess}>
-            <Text style={{ fontSize: 30 }}>{guess}</Text>
-          </View>
+
           <View style={styles.line} />
           <View style={styles.explanation}>
             <Text style={{ fontSize: 20 }}>

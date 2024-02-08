@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setLoggedIn, setUserEmail } from '../state';
-import { TouchableOpacity } from 'react-native';
-import { Text, View, Alert } from 'react-native';
+import { setLoggedIn, setUserEmail, setIsWeb } from '../state';
+import { Text, View, Alert, Platform, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { NavigationContainer, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import {
   createDrawerNavigator,
   DrawerToggleButton,
@@ -57,6 +56,20 @@ export default function Sidebar({ navigation }) {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
   const userEmail = useSelector((state) => state.userEmail);
+  const userAgent = navigator.userAgent || navigator.vendor;
+  const isWeb = useSelector((state) => state.isWeb);
+
+  useEffect(() => {
+    dispatch(
+      // 앱/웹 구분
+      setIsWeb(Platform.OS === 'web')
+    );
+  }, []);
+
+  const handleLogin = (email) => {
+    dispatch(setUserEmail(email));
+    dispatch(setLoggedIn(true));
+  };
   const navigationRef = useRef();
 
   const handleLogout = () => {
@@ -74,9 +87,7 @@ export default function Sidebar({ navigation }) {
   }, [isLoggedIn]);
 
   const handleLogoutButtonPress = () => {
-    // 메시지 박스를 표시합니다.
-    console.log({ isLoggedIn });
-    console.log({ userEmail });
+    // 메시지 박스 표시
     Alert.alert(
       '로그아웃',
       '로그아웃 하시겠습니까?',
@@ -397,6 +408,7 @@ export default function Sidebar({ navigation }) {
         name="게시판"
         component={BoardScreen}
         options={{
+          headerShown: false,
           drawerIcon: ({ focused, size }) => (
             <MaterialIcons name="speaker-notes" size={19} color="black" />
           ),
@@ -457,7 +469,7 @@ export default function Sidebar({ navigation }) {
           },
         })}
       >
-        {(props) => <Login {...props} />}
+        {(props) => <Login {...props} onLogin={handleLogin} />}
       </Drawer.Screen>
 
       <Drawer.Screen

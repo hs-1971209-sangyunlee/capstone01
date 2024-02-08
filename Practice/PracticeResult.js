@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -85,9 +85,9 @@ const styles = StyleSheet.create({
 });
 
 const PracticeResult = ({ route, navigation }) => {
-  const { userChoices, problems, answers } = route.params;
+  const { userChoices, problems, answers } = route.params; // 선택 답안
   const choicesArray = Object.entries(userChoices);
-  const [showOnlyWrong, setShowOnlyWrong] = useState(false);
+  const [showOnlyWrong, setShowOnlyWrong] = useState(false); // 오답만 보기 여부
 
   let totalScore = 100;
 
@@ -98,7 +98,7 @@ const PracticeResult = ({ route, navigation }) => {
       () => {
         navigation.reset({
           index: 0,
-          routes: [{ name: 'MainScreen' }],
+          routes: [{ name: 'Sidebar' }],
         });
         return true;
       }
@@ -118,6 +118,7 @@ const PracticeResult = ({ route, navigation }) => {
     }
   });
 
+  // 해설 버튼 클릭 시 이동
   const handleCommentary = (index) => {
     const answer = answers.find((answer) => answer.id === index);
     const problem = problems.find((problem) => problem.id === index);
@@ -127,6 +128,7 @@ const PracticeResult = ({ route, navigation }) => {
     });
   };
 
+  // 오답만 보기 여부
   const filteredData = showOnlyWrong
     ? choicesArray.filter((_, index) => wrongIndexes[index] === 0)
     : choicesArray;

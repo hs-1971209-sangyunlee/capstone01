@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { View, SafeAreaView, FlatList, StyleSheet, Text } from 'react-native';
-import { Button, TextInput, Card, Title, Paragraph } from 'react-native-paper';
+import { Button, TextInput, Card } from 'react-native-paper';
 import { ref, onValue, off } from 'firebase/database';
 import { database } from '../firebaseConfig';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const styles = StyleSheet.create({
   padding: {
@@ -46,13 +47,15 @@ const styles = StyleSheet.create({
 });
 // 게시판 UI: 글 리스트 표시, 글 작성 버튼
 const BoardScreenUI = ({ navigation, boardName }) => {
-  const [posts, setPosts] = useState([]);
-  const [search, setSearch] = useState('');
-  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [posts, setPosts] = useState([]); // 게시글 데이터
+  const [search, setSearch] = useState(''); // 검색 텍스트
+  const [filteredPosts, setFilteredPosts] = useState([]); // 검색으로 필터링 된 글
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
 
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
   const userEmail = useSelector((state) => state.userEmail);
 
+  // 글 검색
   useEffect(() => {
     setFilteredPosts(
       posts.filter((post) => {
@@ -61,7 +64,9 @@ const BoardScreenUI = ({ navigation, boardName }) => {
     );
   }, [search, posts]);
 
+  // 글 가져오기
   useEffect(() => {
+    setIsLoading(true);
     const postsRef = ref(database, boardName);
     const listener = onValue(postsRef, (snapshot) => {
       const data = snapshot.val();
@@ -74,66 +79,78 @@ const BoardScreenUI = ({ navigation, boardName }) => {
         }));
         setPosts(postList);
       }
+      setIsLoading(false);
     });
 
     return () => {
       off(postsRef, listener);
     };
   }, []);
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <TextInput
-          style={styles.commentInput}
-          placeholder="글 검색"
-          onChangeText={(text) => setSearch(text)}
+      {isLoading ? (
+        <Spinner
+          visible={true}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
         />
-        <FlatList
-          data={filteredPosts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
-            <Card
-              style={[
-                styles.card,
-                index % 2 === 0 ? styles.cardEven : styles.cardOdd, // 홀수와 짝수 인덱스에 따라 다른 배경색 적용
-              ]}
-              onPress={() =>
-                navigation.navigate('PostDetail', {
-                  post: item,
-                  boardName: boardName,
-                })
-              }
-            >
-              <Card.Content>
-                <Text style={{ fontSize: 18 }}>
-                  {item.title.length > 20
-                    ? item.title.substring(0, 20) + '..'
-                    : item.title}
-                </Text>
-                <Text style={{ fontSize: 12 }}>
-                  {item.userEmail.split('@')[0]}
-                </Text>
-              </Card.Content>
-            </Card>
-          )}
-        />
-      </View>
-      <Button
-        style={styles.writeButton}
-        icon="pencil"
-        mode="contained"
-        onPress={() => {
-          isLoggedIn
-            ? // 글 작성 페이지로 이동
-              navigation.navigate('PostCreate', {
-                boardName: boardName,
-                navigation: navigation,
-              })
-            : navigation.navigate('Login');
-        }}
-      >
-        작성
-      </Button>
+      ) : (
+        <>
+          <View style={styles.content}>
+            <TextInput
+              style={styles.commentInput}
+              placeholder="글 검색"
+              onChangeText={(text) => setSearch(text)}
+            />
+            <FlatList
+              data={filteredPosts}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item, index }) => (
+                <Card
+                  style={[
+                    styles.card,
+                    index % 2 === 0 ? styles.cardEven : styles.cardOdd, // 홀수와 짝수 인덱스에 따라 다른 배경색 적용
+                  ]}
+                  onPress={() =>
+                    navigation.navigate('PostDetail', {
+                      post: item,
+                      boardName: boardName,
+                    })
+                  }
+                >
+                  <Card.Content>
+                    <Text style={{ fontSize: 18 }}>
+                      {item.title.length > 20
+                        ? item.title.substring(0, 20) + '..'
+                        : item.title}
+                    </Text>
+                    <Text style={{ fontSize: 12 }}>
+                      {item.userEmail.split('@')[0]}
+                    </Text>
+                  </Card.Content>
+                </Card>
+              )}
+            />
+          </View>
+          <Button
+            style={styles.writeButton}
+            icon="pencil"
+            mode="contained"
+            onPress={() => {
+              isLoggedIn
+                ? // 글 작성 페이지로 이동
+                  navigation.navigate('PostCreate', {
+                    boardName: boardName,
+                    navigation: navigation,
+                  })
+                : navigation.navigate('Login');
+            }}
+          >
+            작성
+          </Button>
+        </>
+      )}
     </SafeAreaView>
   );
 };

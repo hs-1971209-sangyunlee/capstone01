@@ -31,7 +31,6 @@ const Login = ({ navigation, onLogin }) => {
         password
       );
       const email = userCredential.user.email; // 로그인 성공 시 이메일 얻기
-      console.log('email: ' + email);
       dispatch(setUserEmail(email)); // 이메일 상태 업데이트
       dispatch(setLoggedIn(true)); // 로그인 상태 업데이트
 

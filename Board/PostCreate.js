@@ -43,7 +43,6 @@ const PostCreate = ({ route, navigation }) => {
       title: title,
       body: body,
     };
-
     if (!post) {
       // 작성 모드인 경우 새로 작성
       set(postRef, newPost)

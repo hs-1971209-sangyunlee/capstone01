@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { TextInput, Card } from 'react-native-paper';
 import { database } from '../firebaseConfig';
@@ -114,9 +115,28 @@ const PostDetail = ({ route, navigation }) => {
 
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
   const userEmail = useSelector((state) => state.userEmail);
+  const isWeb = useSelector((state) => state.isWeb);
+
+  // 뒤로가기 시 게시판으로 이동
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'BoardScreen' }],
+        });
+        return true;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
-    setUserName(userEmail?.split('@')[0]);
+    if (userEmail) {
+      setUserName(userEmail.split('@')[0]);
+    }
   }, [userEmail]);
 
   // 댓글 가져오기
@@ -195,60 +215,58 @@ const PostDetail = ({ route, navigation }) => {
     });
   };
 
+  // 데이터 삭제 요청
+  const removeData = (dataRef) => {
+    remove(dataRef)
+      .then(() => {
+        console.log('Data removed successfully.');
+        navigation.goBack();
+      })
+      .catch((error) => {
+        console.error('Data could not be removed.' + error);
+      });
+  };
+
+  // 삭제 확인 창
+  const removeProcess = (dataRef) => {
+    if (isWeb) {
+      const userConfirmed = window.confirm(
+        '삭제 확인',
+        '정말로 삭제하시겠습니까?'
+      );
+      if (userConfirmed) {
+        removeData(dataRef);
+      }
+    } else {
+      Alert.alert('삭제 확인', '정말로 삭제하시겠습니까?', [
+        {
+          text: '취소',
+          onPress: () => console.log('삭제 취소'),
+          style: 'cancel',
+        },
+        {
+          text: '확인',
+          onPress: () => {
+            removeData(dataRef);
+          },
+        },
+      ]);
+    }
+  };
+
   // 글 삭제
   const handleDelete = () => {
     const path = `${boardName}/${post.id}`;
     const postRef = ref(database, path);
-
-    // 사용자에게 삭제 확인 메시지를 표시
-    Alert.alert('삭제 확인', '정말로 삭제하시겠습니까?', [
-      {
-        text: '취소',
-        onPress: () => console.log('삭제 취소'),
-        style: 'cancel',
-      },
-      {
-        text: '확인',
-        onPress: () => {
-          remove(postRef)
-            .then(() => {
-              console.log('Data removed successfully.');
-              navigation.goBack();
-            })
-            .catch((error) => {
-              console.error('Data could not be removed.' + error);
-            });
-        },
-      },
-    ]);
+    removeProcess(postRef);
   };
 
   // 댓글 삭제
   const handleCommentDelete = (id) => {
     const path = `${boardName}/${post.id}/comments/${id}`;
-    const postRef = ref(database, path);
-
-    // 사용자에게 삭제 확인 메시지를 표시
-    Alert.alert('삭제 확인', '정말로 삭제하시겠습니까?', [
-      {
-        text: '취소',
-        onPress: () => console.log('삭제 취소'),
-        style: 'cancel',
-      },
-      {
-        text: '확인',
-        onPress: () => {
-          remove(postRef)
-            .then(() => {
-              console.log('Data removed successfully.');
-              fetchComments(); // 삭제 후 댓글을 다시 불러옴
-            })
-            .catch((error) => {
-              console.error('Data could not be removed.' + error);
-            });
-        },
-      },
-    ]);
+    const commentRef = ref(database, path);
+    removeProcess(commentRef);
+    fetchComments(); // 삭제 후 댓글을 다시 불러옴
   };
 
   return (
@@ -261,7 +279,7 @@ const PostDetail = ({ route, navigation }) => {
           <Text style={styles.title}>{post.title}</Text>
           <View style={styles.idRow}>
             <Text style={{ fontSize: 15 }}>
-              작성자: {post.id.split('_')[0]}
+              작성자: {post ? post.userEmail.split('_')[0] : ''}
             </Text>
 
             <View style={styles.buttonRow}>

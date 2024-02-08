@@ -44,7 +44,7 @@ const UnsolvedScreen = ({ route, navigation }) => {
       () => {
         navigation.reset({
           index: 0,
-          routes: [{ name: 'MainScreen' }],
+          routes: [{ name: 'Sidebar' }],
         });
         return true;
       }
