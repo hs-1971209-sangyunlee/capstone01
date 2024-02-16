@@ -46,12 +46,11 @@ const screens = [
     options: { headerShown: false },
   },
   { name: 'Planner', component: Planner, options: { headerShown: false } },
-  { name: 'Login', component: Login, options: { headerShown: false } },
+  { name: 'Login', component: Login },
   { name: 'CreateId', component: CreateId, options: { headerShown: false } },
   {
     name: 'HomeScreen',
     component: HomeScreen,
-    options: { headerShown: false },
   },
   {
     name: 'BoardScreen',

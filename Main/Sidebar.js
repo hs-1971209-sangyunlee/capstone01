@@ -22,6 +22,10 @@ import BoardScreen from '../Board/BoardScreen';
 import PracticeRoundSelect from '../Practice/PracticeRoundSelect';
 import QuizGame from '../Game/QuizGame';
 
+import TypeProblem from '../Problem/TypeProblem';
+import KillerProblem from '../Problem/KillerProblem';
+import WrongProblem from '../Problem/WrongProblem';
+import DictionaryStack from '../Problem/Dictionary';
 const Drawer = createDrawerNavigator();
 const CustomBackButton = ({ navigation }) => {
   const route = useRoute();
@@ -178,7 +182,13 @@ export default function Sidebar({ navigation }) {
       />
       <Drawer.Screen
         name="시대별 풀이"
-        component={SideScreen}
+        component={() => (
+          <TypeProblem
+            param={'era'}
+            isLoggedIn={isLoggedIn}
+            userEmail={userEmail}
+          />
+        )}
         options={{
           drawerIcon: ({ focused, size }) => (
             <MaterialIcons name="access-time-filled" size={19} color="black" />
@@ -206,7 +216,13 @@ export default function Sidebar({ navigation }) {
       />
       <Drawer.Screen
         name="유형별 풀이"
-        component={SideScreen}
+        component={() => (
+          <TypeProblem
+            param={'type'}
+            isLoggedIn={isLoggedIn}
+            userEmail={userEmail}
+          />
+        )}
         options={{
           drawerIcon: ({ focused, size }) => (
             <MaterialIcons name="account-balance" size={19} color="black" />
@@ -234,7 +250,7 @@ export default function Sidebar({ navigation }) {
       />
       <Drawer.Screen
         name="킬러문제"
-        component={SideScreen}
+        component={KillerProblem}
         options={{
           drawerIcon: ({ focused, size }) => (
             <MaterialIcons name="do-not-disturb-on" size={19} color="black" />
@@ -262,7 +278,6 @@ export default function Sidebar({ navigation }) {
       />
       <Drawer.Screen
         name="오답노트"
-        component={SideScreen}
         options={{
           drawerIcon: ({ focused, size }) => (
             <MaterialIcons name="menu-book" size={19} color="black" />
@@ -287,7 +302,15 @@ export default function Sidebar({ navigation }) {
             </View>
           ),
         }}
-      />
+      >
+        {(props) =>
+          isLoggedIn ? (
+            <WrongProblem userEmail={userEmail} />
+          ) : (
+            <Login {...props} onLogin={handleLogin} />
+          )
+        }
+      </Drawer.Screen>
       <Drawer.Screen
         name="플래너"
         component={Planner}
@@ -456,6 +479,34 @@ export default function Sidebar({ navigation }) {
                 }}
               >
                 게임
+              </Text>
+            </View>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="용어사전"
+        component={DictionaryStack}
+        options={{
+          drawerIcon: ({ focused, size }) => (
+            <MaterialIcons name="videogame-asset" size={19} color="black" />
+          ),
+          drawerLabel: ({ focused, color }) => (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: -26,
+              }}
+            >
+              <Text
+                style={{
+                  color: focused ? 'blue' : 'black',
+                  fontSize: 16,
+                  marginBottom: 3,
+                }}
+              >
+                용어사전
               </Text>
             </View>
           ),
