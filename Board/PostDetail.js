@@ -276,6 +276,11 @@ const PostDetail = ({ route, navigation }) => {
     >
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.container}>
         <View style={styles.content}>
+          {isWeb && (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Icon name="arrow-u-left-top" size={30} color="#000" />
+            </TouchableOpacity>
+          )}
           <Text style={styles.title}>{post.title}</Text>
           <View style={styles.idRow}>
             <Text style={{ fontSize: 15 }}>

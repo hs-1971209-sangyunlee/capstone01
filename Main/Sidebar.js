@@ -19,6 +19,7 @@ import CreateId from './createId';
 import HomeScreen from './HomeScreen';
 
 import BoardScreen from '../Board/BoardScreen';
+import BoardScreenWeb from '../Board/BoardScreenWeb';
 import PracticeRoundSelect from '../Practice/PracticeRoundSelect';
 import QuizGame from '../Game/QuizGame';
 

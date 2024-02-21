@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import { LogBox } from 'react-native';
-import { Provider } from 'react-redux';
-import store from './state';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -46,12 +43,11 @@ const screens = [
     options: { headerShown: false },
   },
   { name: 'Planner', component: Planner, options: { headerShown: false } },
-  { name: 'Login', component: Login, options: { headerShown: false } },
+  { name: 'Login', component: Login },
   { name: 'CreateId', component: CreateId, options: { headerShown: false } },
   {
     name: 'HomeScreen',
     component: HomeScreen,
-    options: { headerShown: false },
   },
   {
     name: 'BoardScreen',
@@ -85,24 +81,22 @@ const screens = [
     options: { headerShown: false },
   },
 ];
-LogBox.ignoreLogs(['Warning: ...']); // 경고창 안뜨게 하기
-const App = () => {
+
+const AppMobile = () => {
   return (
-    <Provider store={store}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Sidebar">
-          {screens.map((screen) => (
-            <Stack.Screen
-              key={screen.name}
-              name={screen.name}
-              component={screen.component}
-              options={screen.options}
-            />
-          ))}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </Provider>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Sidebar">
+        {screens.map((screen) => (
+          <Stack.Screen
+            key={screen.name}
+            name={screen.name}
+            component={screen.component}
+            options={screen.options}
+          />
+        ))}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
-export default App;
+export default AppMobile;
