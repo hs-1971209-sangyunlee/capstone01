@@ -27,6 +27,10 @@ import TypeProblem from '../Problem/TypeProblem';
 import KillerProblem from '../Problem/KillerProblem';
 import WrongProblem from '../Problem/WrongProblem';
 import DictionaryStack from '../Problem/Dictionary';
+
+import HistoryTalesScreen from '../HistoryVideo/HistoryTalesScreen';
+import LikedVideosScreen from '../HistoryVideo/LikedVideosScreen';
+
 const Drawer = createDrawerNavigator();
 const CustomBackButton = ({ navigation }) => {
   const route = useRoute();
@@ -401,33 +405,42 @@ export default function Sidebar({ navigation }) {
         }}
       />
       <Drawer.Screen
-        name="역사이야기"
-        component={SideScreen}
+          name="역사이야기"
+          options={{
+            drawerIcon: ({ focused, size }) => (
+              <MaterialIcons name="play-circle-filled" size={19} color="black" />
+            ),
+            drawerLabel: ({ focused, color }) => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -26 }}>
+                <Text style={{ color: focused ? 'blue' : 'black', fontSize: 16, marginBottom: 3, }}>
+                  역사이야기
+                </Text>
+              </View>
+            ),
+          }}
+        >
+          {props => <HistoryTalesScreen {...props} isLoggedIn={isLoggedIn} userEmail={userEmail} />}
+        </Drawer.Screen>
+
+      <Drawer.Screen
+        name="즐겨 찾는 영상"
         options={{
           drawerIcon: ({ focused, size }) => (
-            <MaterialIcons name="play-circle-filled" size={19} color="black" />
+            <MaterialIcons name="star" size={24} color="black" />
           ),
           drawerLabel: ({ focused, color }) => (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: -26,
-              }}
-            >
-              <Text
-                style={{
-                  color: focused ? 'blue' : 'black',
-                  fontSize: 16,
-                  marginBottom: 3,
-                }}
-              >
-                역사이야기
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -26 }}>
+              <Text style={{ color: focused ? 'blue' : 'black', fontSize: 16, marginBottom: 3, }}>
+                즐겨찾는 영상
               </Text>
             </View>
           ),
         }}
-      />
+      >
+        {props => <LikedVideosScreen {...props} isLoggedIn={isLoggedIn} userEmail={userEmail} />}
+      </Drawer.Screen>
+
+
       <Drawer.Screen
         name="게시판"
         component={BoardScreen}
